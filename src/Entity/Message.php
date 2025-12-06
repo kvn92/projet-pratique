@@ -18,6 +18,7 @@ class Message
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
+
     private ?string $message = null;
 
     #[ORM\Column]
@@ -45,7 +46,8 @@ class Message
         return $this->message;
     }
 
-    public function setMessage(string $message): static
+
+    public function setMessage(?string $message): static
     {
         $this->message = $message;
 
