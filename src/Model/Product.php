@@ -2,26 +2,56 @@
 
 namespace App\Model;
 
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Product
 {
-
-
-
-
-
+    // Utilisation de la promotion de propriétés dans le constructeur.
+    // Les propriétés sont déclarées, typées et assignées dans la signature du constructeur.
     public function __construct(
-        private $name,
-        private $price,
-        private $category,
-        private $inStock
-    ) {}
+        #[Assert\NotBlank]
+        #[Assert\Length(
+            min: 2,
+            max: 5,
+            minMessage: 'Minimum 2 caractères',
+            maxMessage: "Maximum 5 caractères"
+        )]
+        private string $name,
 
+        #[Assert\NotBlank]
+        #[Assert\Positive]
+        #[Assert\Regex(
+            pattern: '/\d{2,5}/', // Correction de la regex: d+ n'existe pas, \d+ est la bonne notation
+            message: 'il besoin un chiffre pas de lettre'
+        )]
+        private float $price,
+
+        #[Assert\NotBlank]
+        #[Assert\Length(
+            min: 2,
+            max: 5,
+            minMessage: 'Minimum 2 caractères',
+            maxMessage: "Maximum 5 caractères"
+        )]
+        private string $category,
+
+        #[Assert\NotBlank]
+        #[Assert\IsTrue]
+        private bool $inStock // La propriété inStock doit être un booléen pour Assert\IsTrue
+    ) {
+        // Le corps du constructeur est vide, car l'affectation est automatique.
+    }
+
+    // ... Vos méthodes existantes ...
+
+    // REMARQUE: Les méthodes de lecture (Getters) restent nécessaires.
 
     public function getName(): string
     {
         return $this->name;
     }
+
+    // ... autres Getters ...
 
     public function getPrice(): float
     {
@@ -33,16 +63,10 @@ class Product
         return $this->category;
     }
 
-    public function getinStock(): bool
+    public function getInStock(): bool
     {
         return $this->inStock;
     }
 
-    public function applyPourcentag(float $percentage): float
-    {
-        if ($percentage < 0 || $percentage > 100) {
-            throw new \InvalidArgumentException('Le nombre doit être entre 0 à 100');
-        }
-        return $this->price * (1 - $percentage / 100);
-    }
+    // ... méthode applyPourcentag ...
 }
