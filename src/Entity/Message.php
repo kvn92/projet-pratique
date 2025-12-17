@@ -5,8 +5,12 @@ namespace App\Entity;
 use App\Repository\MessageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+
+#[ORM\HasLifecycleCallbacks]
+
 class Message
 {
     #[ORM\Id]
@@ -14,23 +18,23 @@ class Message
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
 
     private ?string $message = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
 
 
-    public function __construct(
-        // ... (autres arguments si vous en avez)
-    )
-    {
-        $this->createAt = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -62,14 +66,27 @@ class Message
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+
+    public function getUser(): ?User
     {
-        return $this->createAt;
+        return $this->user;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    public function setUser(?User $user): static
     {
-        $this->createAt = $createAt;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }
