@@ -14,6 +14,7 @@ class MessageFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 10; $i++) {
+
             $message = new Message()->setTitre('kevin ' . $i)->setMessage('Bonjour Fixtire ' . $i);
             $manager->persist($message);
 

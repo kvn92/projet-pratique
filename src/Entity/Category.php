@@ -2,21 +2,26 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\isActiveTrait;
-use App\Entity\Trait\SluggTrait;
+use App\Entity\Traits\isActiveTrait;
+use App\Entity\Traits\SluggTrait;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueConstraint(name: 'UNIQ_NOM', fields: ['nom'])]
+#[UniqueConstraint(name: 'UNIQ_CATEGORY_NOM', fields: ['nom'])]
+#[ORM\Index(name: 'IDX_CATEGORY_IS_ACTIVE', fields: ['isActive'])]
+
+
 class Category
 {
+
 
 
     use isActiveTrait;
@@ -27,14 +32,13 @@ class Category
     const NOM_MIN_LENGTH = 3;
     const NOM_MAX_LENGTH = 40;
     const NOM_MIN_MESSAGE_LENGTH = 'il doit contenir au mon {{ limit }} caractères , vous êtes {{}}';
-    const NOM_MAX_MESSAGE_LENGTH = '';
+    const NOM_MAX_MESSAGE_LENGTH = 'Caractères {{ limit }} maximun';
     const NOM_NOTBLANK_MESSAGE = ' {{ label }} Champ est obligatoire {{ value }}';
 
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\Positive()]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: self::NOM_MAX_LENGTH, unique: true)]
@@ -55,9 +59,15 @@ class Category
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'category', orphanRemoval: true)]
     private Collection $messages;
 
-    public function __construct()
+
+    public function __construct(?string $nom = null)
     {
+        // 1. Initialisation de la collection (INDISPENSABLE pour OneToMany)
         $this->messages = new ArrayCollection();
+
+        // 2. Assignation d'une valeur si tu veux passer le nom à la création
+        // Exemple : $cat = new Category("Électronique");
+        $this->nom = $nom;
     }
 
     public function getId(): ?int

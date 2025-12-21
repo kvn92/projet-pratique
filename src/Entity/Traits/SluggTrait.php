@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Trait;
+namespace App\Entity\Traits;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -8,9 +8,11 @@ use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
+
+#[ORM\UniqueConstraint(name: 'UNIQ_SLUG', fields: ['slug'])]
 trait SluggTrait
 {
-    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
+    #[ORM\Column(type: Types::ASCII_STRING, length: 255)]
     private ?string $slug = null;
 
     public function getSlug(): ?string
